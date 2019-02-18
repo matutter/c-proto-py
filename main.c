@@ -42,8 +42,7 @@ bool encode_request_query(pb_ostream_t *stream, const pb_field_t *field, void * 
   return pb_encode_string(stream, (uint8_t*)query, strlen(query));
 }
 
-int main(void)
-{
+int demo(void) {
     /* This is the buffer where we will store our message. */
     uint8_t buffer[512];
     size_t message_length;
@@ -124,5 +123,69 @@ int main(void)
     }
     
     return 0;
+}
+
+void* read_file(char const* filepath, int * data_len) {
+    char *source = NULL;
+    FILE *fp = fopen(filepath, "r");
+    if (fp != NULL) {
+        /* Go to the end of the file. */
+        if (fseek(fp, 0L, SEEK_END) == 0) {
+            /* Get the size of the file. */
+            long bufsize = ftell(fp);
+            if (bufsize == -1) { return NULL; }
+
+            /* Allocate our buffer to that size. */
+            source = malloc(sizeof(char) * (bufsize + 1));
+
+            /* Go back to the start of the file. */
+            if (fseek(fp, 0L, SEEK_SET) != 0) { return NULL; }
+
+            /* Read the entire file into memory. */
+            size_t newLen = fread(source, sizeof(char), bufsize, fp);
+            (*data_len) = (int)newLen;
+            printf("Read %s (%lu bytes)\n", filepath, newLen);
+            if ( ferror( fp ) != 0 ) {
+                fputs("Error reading file", stderr);
+            } else {
+                source[newLen++] = '\0';
+            }
+        }
+        fclose(fp);
+    }
+    return source;
+}
+
+int main(int argc, const char * argv[]) {
+
+    if ( argc >= 2 ) {
+        if (strncmp(argv[1], "demo", 4) == 0) {
+            return demo();
+        } else {
+            int data_len = 0;
+            void* data = read_file(argv[1], &data_len);
+            MsgRequest message = MsgRequest_init_zero;
+            message.query.funcs.decode = decode_request_query;
+            message.query.arg = "stringvalue: \"%s\"\n";
+            
+            /* Create a stream that reads from the buffer. */
+            pb_istream_t stream = pb_istream_from_buffer(data, data_len);
+            
+            /* Now we are ready to decode the message. */
+            int status = pb_decode(&stream, MsgRequest_fields, &message);
+            
+            /* Check for errors... */
+            if (!status) {
+                printf("Decoding failed: %s\n", PB_GET_ERROR(&stream));
+                return 1;
+            }
+            
+            /* Print the data contained in the message. */
+            printf("id: %d, name: %s, query: %s\n", (int)message._id, message.name, (char*)message.query.arg);
+        }
+    } else {
+        printf("Please use 'demo' or path to MsgRequest pb ...\n");
+        return 1;
+    }
 }
 
