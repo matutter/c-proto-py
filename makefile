@@ -28,3 +28,9 @@ protobuf: $(PROTO_SOURCE)
 
 clean:
 	rm -rf $(PROTO_SOURCE) main.o
+
+test: all
+	# A python venv with protobuf installed
+	nanopb/generator/venv/bin/python main.py
+	./main.o demo
+	./main.o message1.pb
