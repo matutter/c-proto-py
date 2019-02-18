@@ -1,3 +1,4 @@
 main.o
 mymessage.pb.c
 mymessage.pb.h
+mymessage_pb2.py
