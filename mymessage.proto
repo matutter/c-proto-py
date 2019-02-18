@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+message MsgRequest {
+  int32 _id = 1;
+  string name = 2;
+  string query = 3;
+}
+
