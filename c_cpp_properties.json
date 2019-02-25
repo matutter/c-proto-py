@@ -1,0 +1,10 @@
+{
+  "configurations": [
+    {
+      "name": "default",
+      "defines": [
+        "PB_ENABLE_MALLOC=1"
+      ]
+    }
+  ]
+}

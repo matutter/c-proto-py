@@ -1,5 +1,14 @@
 syntax = "proto3";
 
+message ListMessage {
+  repeated MsgRequest messages = 1;
+}
+
+message SuperMessage {
+  int32 row = 1;
+  MsgRequest sub = 2;
+}
+
 message MsgRequest {
   int32 _id = 1;
   string name = 2;

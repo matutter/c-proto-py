@@ -11,7 +11,7 @@ PROTO_SOURCE = $(PROTO_C_SOURCE) $(PROTO_H_SOURCE) $(PROTO_PY_SOURCE)
 PROTO_C_RUNTIME = $(wildcard nanopb/*.c)
 
 CC = gcc
-CFLAGS = -Inanopb
+CFLAGS = -Inanopb -DDEBUG -DPB_ENABLE_MALLOC=1
 
 all: protobuf main.o
 
@@ -34,3 +34,5 @@ test: all
 	nanopb/generator/venv/bin/python main.py
 	./main.o demo
 	./main.o message1.pb
+	./main.o message2.pb
+	./main.o message3.pb

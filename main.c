@@ -5,21 +5,42 @@
 #include <pb_encode.h>
 #include <pb_decode.h>
 #include "mymessage.pb.h"
+#include "debug.h"
+
+bool decode_request_query(pb_istream_t *stream, const pb_field_t *field, void **arg);
+
+bool decode_request_messages(pb_istream_t *stream, const pb_field_t *field, void **arg)
+{
+    debug_where("[ENTER]");
+    while (stream->bytes_left)
+    {
+
+        MsgRequest message = MsgRequest_init_zero;
+        message.query.funcs.decode = decode_request_query;
+        message.query.arg = "DefaultValue";
+        
+        if (!pb_decode_ex(stream, MsgRequest_fields, &message, 0))
+            return false;
+
+        debug_info("id: %d, name: %s, query: %s", (int)message._id, message.name, (char *)message.query.arg);
+    }
+    return true;
+}
 
 bool decode_request_query(pb_istream_t *stream, const pb_field_t *field, void **arg)
 {
-  printf("Enter: decode_request_query\n");
+    debug_where("[ENTER]");
 
-  uint8_t buffer[1024] = {0};
-  (*arg) = calloc(1, 1024);
-  
-  /* We could read block-by-block to avoid the large buffer... */
-  if (stream->bytes_left > 1024 - 1)
-      return false;
-  
-  if (!pb_read(stream, (*arg), stream->bytes_left)) {
+    (*arg) = calloc(1, 1024);
 
-    return false;
+    /* We could read block-by-block to avoid the large buffer... */
+    if (stream->bytes_left > 1024 - 1)
+        return false;
+
+    if (!pb_read(stream, (*arg), stream->bytes_left))
+    {
+
+        return false;
   }
   
   /* Print the string, in format comparable with protoc --decode.
@@ -157,33 +178,90 @@ void* read_file(char const* filepath, int * data_len) {
 }
 
 int main(int argc, const char * argv[]) {
-
-    if ( argc >= 2 ) {
+    debug_success("PB_ENABLE_MALLOC: %d", PB_ENABLE_MALLOC);
+  
+    if (argc >= 2)
+    {
         if (strncmp(argv[1], "demo", 4) == 0) {
             return demo();
-        } else {
+        }
+        else if (strncmp(argv[1], "message1.pb", 10) == 0)
+        {
             int data_len = 0;
             void* data = read_file(argv[1], &data_len);
             MsgRequest message = MsgRequest_init_zero;
             message.query.funcs.decode = decode_request_query;
-            message.query.arg = "stringvalue: \"%s\"\n";
+            message.query.arg = "DefaultValue";
             
             /* Create a stream that reads from the buffer. */
             pb_istream_t stream = pb_istream_from_buffer(data, data_len);
             
             /* Now we are ready to decode the message. */
-            int status = pb_decode(&stream, MsgRequest_fields, &message);
-            
+            bool decoded = pb_decode(&stream, MsgRequest_fields, &message);
+            debug_info("pb_decode=%s", decoded?"ok":"fail");
             /* Check for errors... */
-            if (!status) {
+            if (!decoded)
+            {
                 printf("Decoding failed: %s\n", PB_GET_ERROR(&stream));
                 return 1;
             }
             
             /* Print the data contained in the message. */
-            printf("id: %d, name: %s, query: %s\n", (int)message._id, message.name, (char*)message.query.arg);
+            debug_info("id: %d, name: %s, query: %s", (int)message._id, message.name, (char*)message.query.arg);
         }
-    } else {
+        else if (strncmp(argv[1], "message2.pb", 10) == 0) {
+            debug_info("Handling %s", argv[1]);
+            int data_len = 0;
+            void *data = read_file(argv[1], &data_len);
+            SuperMessage message = SuperMessage_init_zero;
+            message.sub.query.funcs.decode = decode_request_query;
+            message.sub.query.arg = "DefaultValue";
+            //message.query.funcs.decode = decode_request_query;
+            //message.query.arg = "stringvalue: \"%s\"\n";
+
+            /* Create a stream that reads from the buffer. */
+            pb_istream_t stream = pb_istream_from_buffer(data, data_len);
+
+            /* Now we are ready to decode the message. */
+            bool decoded = pb_decode(&stream, SuperMessage_fields, &message);
+            debug_info("pb_decode=%s", decoded ? "ok" : "fail");
+            /* Check for errors... */
+            if (!decoded)
+            {
+                printf("Decoding failed: %s\n", PB_GET_ERROR(&stream));
+                return 1;
+            }
+
+            /* Print the data contained in the message. */
+            MsgRequest msg = message.sub;
+            debug_info("row: %d, id: %d, name: %s, query: %s\n", message.row, (int)msg._id, msg.name, (char *)msg.query.arg);
+        }
+        else if (strncmp(argv[1], "message3.pb", 10) == 0)
+        {
+            debug_info("(3) Handling %s", argv[1]);
+            int data_len = 0;
+            void *data = read_file(argv[1], &data_len);
+            ListMessage lmsg = ListMessage_init_zero;
+            lmsg.messages.funcs.decode = decode_request_messages;
+
+            /* Create a stream that reads from the buffer. */
+            pb_istream_t stream = pb_istream_from_buffer(data, data_len);
+
+            /* Now we are ready to decode the message. */
+            bool decoded = pb_decode(&stream, ListMessage_fields, &lmsg);
+            debug_info("pb_decode=%s", decoded ? "ok" : "fail");
+            /* Check for errors... */
+            if (!decoded)
+            {
+                debug_danger("Decoding failed: %s\n", PB_GET_ERROR(&stream));
+                return 1;
+            }
+
+            /* Print the data contained in the message. */
+            // MsgRequest msg = message.sub;
+            // debug_info("row: %d, id: %d, name: %s, query: %s\n", message.row, (int)msg._id, msg.name, (char *)msg.query.arg);
+        }
+    } else  {
         printf("Please use 'demo' or path to MsgRequest pb ...\n");
         return 1;
     }
