@@ -1,0 +1,24 @@
+import os
+Import('env')
+
+def as_obj(p):
+  #dest = env.File(p[1:])
+  #src = env.File(p)
+  #dest.builder_set(Builder(action=Copy(dest, src)))
+  # or do the following
+  return env.Object(target=p[1:-1] + 'o', source=p)
+  #return dest
+
+deps = map(env.File, [
+  'main.c',
+  'mymessage.pb.c',
+  as_obj('#nanopb/pb_common.c'),
+  as_obj('#nanopb/pb_decode.c'),
+  as_obj('#nanopb/pb_encode.c')
+])
+
+main = env.Program('main', deps)
+
+targets = main
+Return('targets')
+
