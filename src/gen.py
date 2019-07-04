@@ -8,6 +8,8 @@ msg.type = MSG_TYPE_1
 
 msg.sub1.text = "this is sub1"
 msg.sub1.val  = 111
+msg.sub2.text = "this is sub2"
+msg.sub2.val  = 222
 
 filename = "data/message1.pb"
 with open(filename, "w") as fd:

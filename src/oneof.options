@@ -1,0 +1,2 @@
+// TopMsg.sfield max_size:40
+TopMsg.payload    no_unions:true

@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='src/oneof.proto',
   package='',
   syntax='proto3',
-  serialized_pb=_b('\n\x0fsrc/oneof.proto\"$\n\x07SubMsg1\x12\x0c\n\x04text\x18\x01 \x01(\t\x12\x0b\n\x03val\x18\x02 \x01(\x05\"&\n\x07SubMsg2\x12\r\n\x05texts\x18\x01 \x03(\t\x12\x0c\n\x04vals\x18\x02 \x03(\x05\"\x80\x01\n\x06TopMsg\x12\x0e\n\x06sfield\x18\x01 \x01(\t\x12\x0e\n\x06ifield\x18\x02 \x01(\x05\x12\x17\n\x04type\x18\x03 \x01(\x0e\x32\t.MSG_TYPE\x12\x18\n\x04sub1\x18( \x01(\x0b\x32\x08.SubMsg1H\x00\x12\x18\n\x04sub2\x18\x32 \x01(\x0b\x32\x08.SubMsg2H\x00\x42\t\n\x07payload*=\n\x08MSG_TYPE\x12\x11\n\rMSG_TYPE_NONE\x10\x00\x12\x0e\n\nMSG_TYPE_1\x10\x01\x12\x0e\n\nMSG_TYPE_2\x10\x02\x62\x06proto3')
+  serialized_pb=_b('\n\x0fsrc/oneof.proto\"$\n\x07SubMsg1\x12\x0c\n\x04text\x18\x01 \x01(\t\x12\x0b\n\x03val\x18\x02 \x01(\x05\"$\n\x07SubMsg2\x12\x0c\n\x04text\x18\x01 \x01(\t\x12\x0b\n\x03val\x18\x02 \x01(\x05\"\x80\x01\n\x06TopMsg\x12\x0e\n\x06sfield\x18\x01 \x01(\t\x12\x0e\n\x06ifield\x18\x02 \x01(\x05\x12\x17\n\x04type\x18\x03 \x01(\x0e\x32\t.MSG_TYPE\x12\x18\n\x04sub1\x18( \x01(\x0b\x32\x08.SubMsg1H\x00\x12\x18\n\x04sub2\x18\x32 \x01(\x0b\x32\x08.SubMsg2H\x00\x42\t\n\x07payload*=\n\x08MSG_TYPE\x12\x11\n\rMSG_TYPE_NONE\x10\x00\x12\x0e\n\nMSG_TYPE_1\x10\x01\x12\x0e\n\nMSG_TYPE_2\x10\x02\x62\x06proto3')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -45,8 +45,8 @@ _MSG_TYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=228,
-  serialized_end=289,
+  serialized_start=226,
+  serialized_end=287,
 )
 _sym_db.RegisterEnumDescriptor(_MSG_TYPE)
 
@@ -103,16 +103,16 @@ _SUBMSG2 = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='texts', full_name='SubMsg2.texts', index=0,
-      number=1, type=9, cpp_type=9, label=3,
-      has_default_value=False, default_value=[],
+      name='text', full_name='SubMsg2.text', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='vals', full_name='SubMsg2.vals', index=1,
-      number=2, type=5, cpp_type=1, label=3,
-      has_default_value=False, default_value=[],
+      name='val', full_name='SubMsg2.val', index=1,
+      number=2, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -129,7 +129,7 @@ _SUBMSG2 = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=57,
-  serialized_end=95,
+  serialized_end=93,
 )
 
 
@@ -190,8 +190,8 @@ _TOPMSG = _descriptor.Descriptor(
       name='payload', full_name='TopMsg.payload',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=98,
-  serialized_end=226,
+  serialized_start=96,
+  serialized_end=224,
 )
 
 _TOPMSG.fields_by_name['type'].enum_type = _MSG_TYPE

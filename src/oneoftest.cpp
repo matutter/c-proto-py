@@ -5,6 +5,7 @@
 #include <fstream>
 
 #include "pb.h"
+#include "pb_common.h"
 #include "pb_decode.h"
 #include "oneof.pb.h"
 
@@ -46,6 +47,32 @@ bool decode_string(pb_istream_s* stream, const pb_field_t* field, void** arg) {
   return decode_ok;
 }
 
+const pb_msgdesc_t* decode_unionmessage_type(pb_istream_t *parent_stream) {
+  pb_wire_type_t wire_type;
+  uint32_t tag;
+  bool eof;
+
+  pb_istream_t stream = PB_ISTREAM_EMPTY;
+  if ( !pb_make_string_substream(parent_stream, &stream) ) {
+    cout << "Failed to make substream" << endl;
+    return nullptr;
+  }
+
+  while (pb_decode_tag(&stream, &wire_type, &tag, &eof)) {
+    if (wire_type == PB_WT_STRING) {
+      pb_field_iter_t iter;
+      if (pb_field_iter_begin(&iter, TopMsg_fields, NULL) &&
+          pb_field_iter_find(&iter, tag)) {
+          return iter.submsg_desc;
+      }
+    }
+    
+    pb_skip_field(&stream, wire_type);
+  }
+  
+  return nullptr;
+}
+
 int main(void) {
   string filepath = "data/message1.pb";
   cout << "oneoftest: " << filepath << endl;
@@ -61,31 +88,18 @@ int main(void) {
   TopMsg msg = TopMsg_init_zero;
   msg.sfield.arg = &top_sfield;
   msg.sfield.funcs.decode = decode_string;
-  msg.payload.sub1.text.arg = &sub1_text;
-  msg.payload.sub1.text.funcs.decode = decode_string;
-  cout << "which_payload: " << (int)msg.which_payload << endl;
+  msg.sub1.text.arg = &sub1_text;
+  msg.sub1.text.funcs.decode = decode_string;
+  msg.sub2.text.arg = &sub1_text;
+  msg.sub2.text.funcs.decode = decode_string;
 
-  msg.which_payload = TopMsg_sub1_tag;
-  printf("top sfield=%p, sub1 test=%p\n", msg.sfield.arg,msg.payload.sub1.text.arg);
+  cout << "bytes left: " << stream.bytes_left << endl;
+  //const pb_msgdesc_t *type = decode_unionmessage_type(&stream);
+  cout << "bytes left: " << stream.bytes_left << endl;
+
   bool decode_ok = pb_decode(&stream, TopMsg_fields, &msg);
   if ( decode_ok ) {
     cout << "OK: top.sfield=" << top_sfield << ", sub1.text=" << sub1_text << endl;
-
-    if ( msg.type == MSG_TYPE_MSG_TYPE_1 ) {
-      cout << "Expecting: MSG_TYPE_MSG_TYPE_1 " << (int)msg.which_payload << endl;
-    } else if( msg.type == MSG_TYPE_MSG_TYPE_2 ) {
-      cout << "Expecting: MSG_TYPE_MSG_TYPE_2 " << (int)msg.which_payload << endl;
-    } else {
-      cout << "Expecting: ??? " << (int)msg.type << endl;
-    }
-
-    // which payload is set to 40 now - so can we have it
-    // decode only SubMsg1_fields? ... nope.
-    stream = pb_istream_from_buffer(buffer.data(), buffer.size());
-    decode_ok = pb_decode(&stream, SubMsg1_fields, &msg);
-    if (decode_ok) {
-      cout << "OK: top.sfield=" << top_sfield << ", sub1.text=" << sub1_text << endl;
-    }
   } else {
     cout << "ERROR: " << PB_GET_ERROR(&stream) << endl;
   }
