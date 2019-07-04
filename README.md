@@ -35,7 +35,7 @@ s=this is the top, ptr=0x7ffd69e965d0
 OK: top.sfield=this is the top, sub1.text=this is the top
 ```
 
-#. oneof buf seems different @847ac296
+3. oneof buf seems different @847ac296
 
 ```
 # Output of #3

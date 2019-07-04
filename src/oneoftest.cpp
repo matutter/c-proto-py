@@ -63,22 +63,28 @@ int main(void) {
   msg.sfield.funcs.decode = decode_string;
   msg.payload.sub1.text.arg = &sub1_text;
   msg.payload.sub1.text.funcs.decode = decode_string;
+  cout << "which_payload: " << (int)msg.which_payload << endl;
 
   printf("top sfield=%p, sub1 test=%p\n", msg.sfield.arg,msg.payload.sub1.text.arg);
   bool decode_ok = pb_decode(&stream, TopMsg_fields, &msg);
   if ( decode_ok ) {
     cout << "OK: top.sfield=" << top_sfield << ", sub1.text=" << sub1_text << endl;
 
-    SubMsg1 sub1 = SubMsg1_init_zero;
-    sub1.text.arg = &sub1_text;
-    sub1.text.funcs.decode = decode_string;
-    stream = pb_istream_from_buffer(buffer.data(), buffer.size());
-
-    decode_ok = pb_decode(&stream, SubMsg1_fields, &sub1);
-    if ( decode_ok ) {
-      cout << "OK: top.sfield=" << top_sfield << ", sub1.text=" << sub1_text << endl;
+    if ( msg.type == MSG_TYPE_MSG_TYPE_1 ) {
+      cout << "Expecting: MSG_TYPE_MSG_TYPE_1 " << (int)msg.which_payload << endl;
+    } else if( msg.type == MSG_TYPE_MSG_TYPE_2 ) {
+      cout << "Expecting: MSG_TYPE_MSG_TYPE_2 " << (int)msg.which_payload << endl;
+    } else {
+      cout << "Expecting: ??? " << (int)msg.type << endl;
     }
 
+    // which payload is set to 40 now - so can we have it
+    // decode only SubMsg1_fields? ... nope.
+    stream = pb_istream_from_buffer(buffer.data(), buffer.size());
+    decode_ok = pb_decode(&stream, SubMsg1_fields, &msg);
+    if (decode_ok) {
+      cout << "OK: top.sfield=" << top_sfield << ", sub1.text=" << sub1_text << endl;
+    }
   } else {
     cout << "ERROR: " << PB_GET_ERROR(&stream) << endl;
   }
