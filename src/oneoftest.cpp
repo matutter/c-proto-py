@@ -65,6 +65,7 @@ int main(void) {
   msg.payload.sub1.text.funcs.decode = decode_string;
   cout << "which_payload: " << (int)msg.which_payload << endl;
 
+  msg.which_payload = TopMsg_sub1_tag;
   printf("top sfield=%p, sub1 test=%p\n", msg.sfield.arg,msg.payload.sub1.text.arg);
   bool decode_ok = pb_decode(&stream, TopMsg_fields, &msg);
   if ( decode_ok ) {

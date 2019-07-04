@@ -21,9 +21,7 @@ message TopMsg {
   int32  ifield = 2;
   MSG_TYPE type = 3;
 
-  oneof payload {
-    SubMsg1 sub1 = 40;
-    SubMsg2 sub2 = 50;
-  }
+  SubMsg1 sub1 = 40;
+  SubMsg2 sub2 = 50;
 }
 
