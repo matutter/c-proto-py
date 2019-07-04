@@ -4,3 +4,6 @@ mymessage.pb.h
 mymessage_pb2.py
 message1.pb
 *.pyc
+.sconsign.dblite
+build1/
+oneoftest
