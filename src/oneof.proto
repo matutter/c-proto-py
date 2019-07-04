@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+enum MSG_TYPE {
+  MSG_TYPE_NONE = 0;
+  MSG_TYPE_1 = 1;
+  MSG_TYPE_2 = 2;
+}
+
+message SubMsg1 {
+  string text = 1;
+  int32  val = 2;
+}
+
+message SubMsg2 {
+  repeated string texts = 1;
+  repeated int32 vals = 2;
+}
+
+message TopMsg {
+  string sfield = 1;
+  int32  ifield = 2;
+  MSG_TYPE type = 3;
+
+  oneof payload {
+    SubMsg1 sub1 = 40;
+    SubMsg2 sub2 = 50;
+  }
+}
+

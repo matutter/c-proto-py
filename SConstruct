@@ -1,7 +1,10 @@
 
 env = Environment(
-    CPPPATH=['#nanopb', '#src']
-  , CCFLAGS = ['-DDEBUG', '-DPB_ENABLE_MALLOC=1']
+    CPPPATH=['#nanopb', '#src', '#']
+  , CCFLAGS = ['-DDEBUG']
+  , CXXFLAGS = ['-std=c++17']
+  , CC = "clang"
+  , CXX = "clang++"
 )
 
 targets = env.SConscript(

@@ -3,20 +3,14 @@ PHONY := protobuf main
 PROTOC = protoc
 PROTOC_C_PLUGIN = --plugin=protoc-gen-nanopb=nanopb/generator/protoc-gen-nanopb
 
-PROTO_SPECS  = $(wildcard *.proto)
+PROTO_SPECS  = $(wildcard src/*.proto)
 PROTO_C_SOURCE = $(patsubst %.proto,%.pb.c,$(PROTO_SPECS))
 PROTO_H_SOURCE = $(patsubst %.proto,%.pb.h,$(PROTO_SPECS))
 PROTO_PY_SOURCE = $(patsubst %.proto,%_pb2.py,$(PROTO_SPECS))
 PROTO_SOURCE = $(PROTO_C_SOURCE) $(PROTO_H_SOURCE) $(PROTO_PY_SOURCE)
 PROTO_C_RUNTIME = $(wildcard nanopb/*.c)
 
-CC = gcc
-CFLAGS = -Inanopb -DDEBUG -DPB_ENABLE_MALLOC=1
-
-all: protobuf main.o
-
-main.o: $(PROTO_C_SOURCE) $(PROTO_C_RUNTIME) main.c
-	$(CC) $(CFLAGS) -o $@ $^ 
+all: protobuf
 
 protobuf: $(PROTO_SOURCE)
 
@@ -28,11 +22,3 @@ protobuf: $(PROTO_SOURCE)
 
 clean:
 	rm -rf $(PROTO_SOURCE) main.o
-
-test: all
-	# A python venv with protobuf installed
-	nanopb/generator/venv/bin/python main.py
-	./main.o demo
-	./main.o message1.pb
-	./main.o message2.pb
-	./main.o message3.pb
