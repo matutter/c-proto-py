@@ -1,3 +1,5 @@
+# Generates python and C sources with nanopb plugin.
+
 PHONY := protobuf main
 
 PROTOC = protoc

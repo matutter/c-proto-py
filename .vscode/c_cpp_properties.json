@@ -1,10 +1,18 @@
 {
-  "configurations": [
-    {
-      "name": "default",
-      "defines": [
-        "PB_ENABLE_MALLOC=1"
-      ]
-    }
-  ]
+    "configurations": [
+        {
+            "name": "default",
+            "defines": [
+            ],
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/clang++",
+            "includePath": [
+                "nanopb/",
+                "src/"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
 }

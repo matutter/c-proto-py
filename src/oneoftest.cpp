@@ -69,8 +69,6 @@ int main(void) {
   if ( decode_ok ) {
     cout << "OK: top.sfield=" << top_sfield << ", sub1.text=" << sub1_text << endl;
 
-    cout << msg.which_payload << endl;
-
     SubMsg1 sub1 = SubMsg1_init_zero;
     sub1.text.arg = &sub1_text;
     sub1.text.funcs.decode = decode_string;
